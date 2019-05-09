@@ -5,9 +5,10 @@ def sigmoid(x):
     return s
 
 class FullyConnectLayer(object):
-    def __init__(self, input_n, output_n, activation_fun='sigmoid', rate=0.1):
+    def __init__(self, input_n, output_n, name='layer', activation_fun='sigmoid', rate=0.1):
         self.input_n = input_n
         self.output_n = output_n
+        self.name = name
         if activation_fun == 'sigmoid':
             self.act_fun = sigmoid
 
@@ -24,7 +25,7 @@ class FullyConnectLayer(object):
 
     def update(self, grad_a1):
         if grad_a1.shape[1] != self.output_n or grad_a1.shape[0] != self.batch_size:
-            raise RuntimeError('invalid input size:%d vs %d'%(grad_a1.shape[1], self.output_n))
+            raise RuntimeError('invalid input size:[%d, %d]'%(grad_a1.shape[0], grad_a1.shape[1]))
 
         # 回传的梯度
         grad_a0 = np.dot(grad_a1*self.output_a*(1-self.output_a), self.w.transpose())
