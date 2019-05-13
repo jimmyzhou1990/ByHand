@@ -4,6 +4,18 @@ def sigmoid(x):
     s = 1 / (1 + np.exp(-x))
     return s
 
+def grad_sigmoid(a):
+    g = a * (1 - a)
+    return g
+
+def relu(x):
+    return np.maximum(x, 0)
+
+def grad_relu(a):
+    b = a.copy()
+    b[b > 0] = 1
+    return b
+
 class FullyConnectLayer(object):
     def __init__(self, input_n, output_n, name='layer', activation_fun='sigmoid', rate=0.1):
         self.input_n = input_n
@@ -11,6 +23,10 @@ class FullyConnectLayer(object):
         self.name = name
         if activation_fun == 'sigmoid':
             self.act_fun = sigmoid
+            self.grad_act_fun = grad_sigmoid
+        else:
+            self.act_fun = relu
+            self.grad_act_fun = grad_relu
 
         # 权重w 偏置b
         self.w = np.random.randn(self.input_n, self.output_n)/np.sqrt(self.input_n)
@@ -28,10 +44,10 @@ class FullyConnectLayer(object):
             raise RuntimeError('invalid input size:[%d, %d]'%(grad_a1.shape[0], grad_a1.shape[1]))
 
         # 回传的梯度
-        grad_a0 = np.dot(grad_a1*self.output_a*(1-self.output_a), self.w.transpose())
+        grad_a0 = np.dot(grad_a1*self.grad_act_fun(self.output_a), self.w.transpose())
 
         # w,b的梯度
-        tmp = grad_a1*self.output_a*(1-self.output_a)
+        tmp = grad_a1*self.grad_act_fun(self.output_a)
         grad_b = np.sum(tmp, axis=0)/self.batch_size
         tmp = tmp.repeat(self.input_n, axis=0)
         tmp1 = self.input_a.reshape(-1, 1).repeat(self.output_n, axis=1)

@@ -8,7 +8,7 @@ class Model(object):
     def __init__(self, frame=[784, 100, 10]):
         self.layers = []
         for i in range(len(frame)-1):
-            self.layers.append(FullyConnectLayer(frame[i], frame[i+1], 'layer%d'%i))
+            self.layers.append(FullyConnectLayer(frame[i], frame[i+1], 'layer%d'%i, activation_fun='relu'))
 
     def inference(self, x_input):
         a = x_input
