@@ -21,6 +21,7 @@ def load_mnist(path):
         magic, num, rows, cols = struct.unpack('>IIII', f.read(16))
         print(magic, num, rows, cols)
         train_images = np.fromfile(f, dtype=np.uint8).reshape(len(train_labels), 784)
+        train_images = train_images.astype('float')/255
 
     with open(test_label_path, 'rb') as f:
         magic, n = struct.unpack('>II', f.read(8))
@@ -30,6 +31,7 @@ def load_mnist(path):
     with open(test_image_path, 'rb') as f:
         magic, num, rows, cols = struct.unpack('>IIII', f.read(16))
         test_images = np.fromfile(f, dtype=np.uint8).reshape(len(test_labels), 784)
+        test_images = test_images.astype('float')/255
 
     print('load train_images:%d, test_images:%d'%(len(train_labels), len(test_labels)))
     return train_images, train_labels, test_images, test_labels
@@ -37,6 +39,7 @@ def load_mnist(path):
 if __name__ == '__main__':
     path = 'D:\project\ByHand\dataset\mnist'
     train_images, train_labels, test_images, test_labels = load_mnist(path)
+    print(train_images[0])
     fig, ax = plt.subplots(
         nrows=2,
         ncols=5,

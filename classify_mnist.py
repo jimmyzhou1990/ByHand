@@ -44,7 +44,6 @@ class Model(object):
                     grad_back = self.layers[k].update(grad_back)
                 print("epoch:%d, batch:%d, loss:%f, accu%f"%(i, j, loss, accu))
 
-
     def test(self, test_x, test_y):
         y_out = self.inference(test_x)
         accu = self.accuracy(test_y, y_out)
