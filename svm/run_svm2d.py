@@ -28,7 +28,9 @@ def load_data_2d_linear(w, b, n, data_range, gap):
 def load_data_2d_quadratic(k, b, n, data_range=[-10, 10], gap=1):
     wid = data_range[1] - data_range[0]
     x_pos = []
+    np.random.seed(1)
     while len(x_pos) < n:
+
         x, y = np.random.rand(2)*wid + data_range[0]
         if y - k*np.power(x, 2) - b >= gap:
             x_pos.append([x, y])
@@ -102,7 +104,7 @@ if __name__ == '__main__':
     # plot_2d_linear(x, svm.w, svm.b, supportIndex)
 
     #no-linear
-    x, y = load_data_2d_quadratic(0.1, -3, 100, [-10, 10], 0.5)
+    x, y = load_data_2d_quadratic(0.1, -3, 50, [-10, 10], 0.5)
 
     svm = SVM(x, y, 10000, 'quadratic')
     svm.train()

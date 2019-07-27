@@ -1,6 +1,5 @@
-from nn.layers import FullyConnectLayer
-from nn.layers import EucLoss
-import load_mnist
+from nn.layers import *
+from data_loader import load_mnist
 import random
 import numpy as np
 
@@ -8,7 +7,12 @@ class Model(object):
     def __init__(self, frame=[784, 100, 10]):
         self.layers = []
         for i in range(len(frame)-1):
-            self.layers.append(FullyConnectLayer(frame[i], frame[i+1], 'layer%d'%i, activation_fun='relu'))
+            if i == len(frame)-2:
+                self.layers.append(SoftmaxLayer(frame[i], frame[i+1]))
+            else:
+                self.layers.append(FullyConnectLayer(frame[i], frame[i+1], 'layer%d'%i, activation_fun='sigmoid'))
+        # for i in range(len(frame)-1):
+        #     self.layers.append(FullyConnectLayer(frame[i], frame[i+1], 'layer%d'%i, activation_fun='sigmoid'))
 
     def inference(self, x_input):
         a = x_input
@@ -27,6 +31,7 @@ class Model(object):
     def train(self, x_train, y_train, x_test, y_test, epoch=50, batch_size=128):
         batch_num = (len(y_train) + batch_size - 1) // batch_size
         index = list(range(len(y_train)))
+        print(self.layers[-1])
         for i in range(epoch):
             random.shuffle(index)
             for j in range(batch_num):
@@ -38,8 +43,11 @@ class Model(object):
                 y_t = y_train[index[start_pos:end_pos]]
                 y_out = self.inference(x_in)
                 accu = self.accuracy(y_t, y_out)
-                loss = EucLoss.loss(y_t, y_out)
-                grad_back = EucLoss.grad_originate(y_t, y_out)
+                #loss = MSELoss.loss(y_t, y_out)
+                #grad_back = MSELoss.grad_originate(y_t, y_out)
+
+                loss = self.layers[-1].loss_sum(y_t)
+                grad_back = self.layers[-1].grad(y_t)
                 for k in range(len(self.layers)-1, -1, -1):
                     grad_back = self.layers[k].update(grad_back)
                 print("epoch:%d, batch:%d, loss:%f, accu%f"%(i, j, loss, accu))
@@ -52,5 +60,5 @@ class Model(object):
 if __name__ == "__main__":
     train_images, train_labels, test_images, test_labels = load_mnist.load_mnist('D:\project\ByHand\dataset\mnist')
     model = Model()
-    model.train(train_images, train_labels, test_images, test_labels, epoch=5, batch_size=1000)
+    model.train(train_images, train_labels, test_images, test_labels, epoch=20, batch_size=128)
 
